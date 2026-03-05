@@ -1,0 +1,92 @@
+@import url("../../.cache/wal/colors-waybar.css");
+
+@define-color accent @color9;
+@define-color text @color7;
+@define-color subtle rgba(255,255,255,0.08);
+
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+* {
+  all: unset;
+  font-family: "Geist";
+  font-size: 18px;
+  font-weight: 500;
+}
+
+window {
+  padding: 30px;
+  border-radius: 22px;
+
+  background-color: rgba(20, 20, 25, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(25px);
+  -gtk-backdrop-filter: blur(25px);
+
+  animation: fadeSlide 0.25s ease-out forwards;
+}
+
+#outer-box {
+  margin: 5px;
+}
+
+#input {
+  margin: 10px 20px 20px 20px;
+  padding: 18px 20px;
+
+  border-radius: 14px;
+
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: white;
+}
+
+#input:focus {
+  border: 1px solid @accent;
+  background-color: rgba(255, 255, 255, 0.09);
+}
+
+#scroll {
+  padding: 10px 25px 25px 25px;
+}
+
+#entry {
+  padding: 14px 18px;
+  margin: 6px 0;
+
+  border-radius: 14px;
+
+  color: #bbb;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+#entry:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateX(4px);
+}
+
+#entry:selected {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid @accent;
+}
+
+#entry:selected #text {
+  color: @accent;
+}
+
+#text {
+  color: @text;
+}

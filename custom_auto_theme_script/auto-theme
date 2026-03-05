@@ -1,0 +1,66 @@
+#!/bin/bash
+
+WALLDIR="$HOME/Wallpapers"
+INDEXFILE="$HOME/.cache/auto-theme-index"
+
+# Получаем список обоев по порядку
+mapfile -t WALLS < <(find "$WALLDIR" -type f | sort)
+
+NUM_WALLS=${#WALLS[@]}
+[ "$NUM_WALLS" -eq 0 ] && { echo "No wallpapers found in $WALLDIR"; exit 1; }
+
+# Читаем текущий индекс
+if [ -f "$INDEXFILE" ]; then
+    INDEX=$(<"$INDEXFILE")
+else
+    INDEX=0
+fi
+
+# Если передан аргумент, используем его
+if [ -n "$1" ]; then
+    WALL="$WALLDIR/$1"
+else
+    WALL="${WALLS[$INDEX]}"
+    INDEX=$(( (INDEX + 1) % NUM_WALLS ))  # следующий индекс
+    echo "$INDEX" > "$INDEXFILE"
+fi
+
+[ ! -f "$WALL" ] && { echo "Wallpaper not found: $WALL"; exit 1; }
+
+# -----------------------------
+# 1️⃣ Плавный переход обоев
+# -----------------------------
+swww img "$WALL" --transition-type wave --transition-duration 1 &  # более медленно
+SWWW_PID=$!
+
+# -----------------------------
+# 2️⃣ Параллельно генерируем цвета
+# -----------------------------
+wal -i "$WALL"
+source ~/.cache/wal/colors.sh
+
+# Убираем # и добавляем alpha
+color4="${color4//#/}ee"
+color6="${color6//#/}ee"
+color8="${color8//#/}aa"
+
+# Обновляем borders.conf
+cat > ~/.config/hypr/borders.conf <<EOF
+general {
+    border_size = 2
+    col.active_border = rgba($color4) rgba($color6) 45deg
+    col.inactive_border = rgba($color8)
+}
+EOF
+
+# -----------------------------
+# 3️⃣ Ждем завершения плавного перехода обоев
+# -----------------------------
+wait $SWWW_PID
+
+# -----------------------------
+# 4️⃣ Перезапуск панели плавно
+# -----------------------------
+killall waybar
+sleep 0.3  # короткая пауза
+waybar &
